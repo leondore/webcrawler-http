@@ -1,3 +1,8 @@
+function getURLsFromHTML(htmlBody, baseURL) {
+  const urls = [];
+  return urls;
+}
+
 function normalizeURL(urlString) {
   try {
     const urlObj = new URL(urlString);
@@ -18,4 +23,5 @@ console.log(normalizeURL('https://blog.leon.ninja//'));
 
 module.exports = {
   normalizeURL,
+  getURLsFromHTML,
 };
