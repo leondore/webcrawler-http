@@ -1,5 +1,32 @@
+const { JSDOM } = require('jsdom');
+
 function getURLsFromHTML(htmlBody, baseURL) {
   const urls = [];
+  const dom = new JSDOM(htmlBody);
+  const baseUrlObj = new URL(baseURL);
+
+  const anchorList = dom.window.document.querySelectorAll('a');
+  for (let anchor of anchorList) {
+    let url = anchor.href;
+
+    if (url.startsWith('/')) {
+      url = `${baseURL}${url}`;
+    }
+
+    if (!url.startsWith('http') && !url.startsWith('https')) {
+      if (url.includes(baseUrlObj.host)) {
+        url = `${baseUrlObj.protocol}//${url}`;
+      }
+    }
+
+    try {
+      const urlObj = new URL(url);
+      urls.push(urlObj.href);
+    } catch (e) {
+      console.error(`Invalid URL: ${url}`);
+    }
+  }
+
   return urls;
 }
 
@@ -18,8 +45,6 @@ function normalizeURL(urlString) {
     return 'Please enter a valid URL';
   }
 }
-
-console.log(normalizeURL('https://blog.leon.ninja//'));
 
 module.exports = {
   normalizeURL,
