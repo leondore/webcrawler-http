@@ -1,7 +1,7 @@
 const { argv, exit } = require('node:process');
 const { crawlPage } = require('./crawl.js');
 
-function main() {
+async function main() {
   const [, , ...args] = argv;
 
   if (args.length < 1) {
@@ -17,7 +17,8 @@ function main() {
   const baseUrl = args[0];
   console.log(`Crawler starting at ${baseUrl}...`);
 
-  crawlPage(baseUrl);
+  const pages = await crawlPage(baseUrl, baseUrl, {});
+  console.log(pages);
 }
 
 main();

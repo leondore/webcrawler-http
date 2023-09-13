@@ -1,8 +1,36 @@
 const { JSDOM } = require('jsdom');
 
-async function crawlPage(baseUrl) {
+function isSameDomain(baseUrl, currentUrl) {
   try {
-    const response = await fetch(baseUrl);
+    const baseUrlObj = new URL(baseUrl);
+    const urlObj = new URL(currentUrl);
+
+    if (baseUrlObj.host !== urlObj.host) {
+      return false;
+    }
+
+    return true;
+  } catch (e) {
+    return true;
+  }
+}
+
+async function crawlPage(baseUrl, currentUrl, pages) {
+  if (!isSameDomain(baseUrl, currentUrl)) {
+    return pages;
+  }
+
+  const url = normalizeURL(currentUrl);
+
+  if (pages[url] > 0) {
+    pages[url]++;
+    return pages;
+  }
+
+  pages[url] = url === baseUrl ? 0 : 1;
+
+  try {
+    const response = await fetch(`https://${url}`);
 
     if (response.status > 399) {
       throw new Error(response.status);
@@ -13,10 +41,16 @@ async function crawlPage(baseUrl) {
     }
 
     const htmlBody = await response.text();
-    console.log(htmlBody);
+
+    const pagesList = getURLsFromHTML(htmlBody, baseUrl);
+    while (pagesList.length) {
+      pages = await crawlPage(baseUrl, pagesList.shift(), pages);
+    }
   } catch (e) {
     console.log(`Crawl error: ${e.message}, in ${baseUrl}`);
   }
+
+  return pages;
 }
 
 function getURLsFromHTML(htmlBody, baseURL) {
