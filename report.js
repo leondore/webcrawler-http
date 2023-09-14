@@ -1,6 +1,4 @@
-function printReport(pages) {
-  console.log('report starting...');
-
+function formatSortPages(pages) {
   const pagesList = Object.entries(pages).map(([url, count]) => {
     return { count, url };
   });
@@ -13,9 +11,17 @@ function printReport(pages) {
     return a.count < b.count ? 1 : -1;
   });
 
+  return pagesList;
+}
+
+function printReport(pages) {
+  console.log('report starting...');
+
+  const pagesList = formatSortPages(pages);
+
   for (const page of pagesList) {
     console.log(`Found ${page.count} internal link(s) to ${page.url}`);
   }
 }
 
-module.exports = { printReport };
+module.exports = { printReport, formatSortPages };
