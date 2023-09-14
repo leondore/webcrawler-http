@@ -29,6 +29,8 @@ async function crawlPage(baseUrl, currentUrl, pages) {
 
   pages[url] = url === baseUrl ? 0 : 1;
 
+  console.log(`actively crawling: ${url}`);
+
   try {
     const response = await fetch(`https://${url}`);
 
